@@ -1,7 +1,33 @@
 """
-    TOONOptions
+    TOONOptions(; kw...)
 
-Configuration for TOON encoding and decoding.
+Configuration settings controlling the behavior of the TOON encoder and decoder.
+
+This struct is immutable and is typically instantiated via keyword arguments passed 
+directly to `encode` or `decode`.
+
+# Arguments
+
+## General
+- `indent_size::Int = 2`: The number of spaces used to represent one level of indentation.
+- `delimiter::Char = ','`: The delimiter character used to separate items in arrays and tabular rows. 
+  Common alternatives are pipe (`|`) or tab (`\\t`) when data contains many commas.
+
+## Decoding (Parsing)
+- `strict::Bool = true`: Controls strictness of validation.
+    - If `true`: Enforces exact array length matches (header `[N]` vs actual items) and strict indentation multiples.
+    - If `false`: Allows best-effort parsing (e.g., ignoring extra indentation or mismatching counts).
+- `expand_paths::String = "off"`: Controls how dotted keys (e.g., `user.name`) are interpreted.
+    - `"off"`: Keys are treated literal strings (e.g., `Dict("user.name" => "Val")`).
+    - `"safe"`: Keys are expanded into nested dictionaries (e.g., `Dict("user" => Dict("name" => "Val"))`).
+
+## Encoding (Serialization)
+- `key_folding::String = "off"`: Controls how nested dictionaries are written.
+    - `"off"`: Standard indentation is used for all nesting.
+    - `"safe"`: Flattens nested dictionaries into dotted keys where possible (e.g., `server.port: 80`) 
+       to create compact configuration files. Only folds if keys are valid identifiers.
+- `flatten_depth::Float64 = Inf`: The maximum depth level to apply key folding. 
+   Useful if you want top-level grouping but leaf-level folding.
 """
 struct TOONOptions
     indent_size::Int
